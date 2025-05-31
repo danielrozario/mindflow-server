@@ -15,6 +15,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const startServer = async () => {
+    console.log('Connecting DB from Server.js');
     await connectDB();
 
     // Middleware
