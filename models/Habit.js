@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const habitSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId: { type:String, required: true, index: true },
     trackedDays: [{
         date: { type: Date, required: true }/*,
         completed: { type: Boolean, default: false }*/
