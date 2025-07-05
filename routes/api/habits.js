@@ -10,23 +10,21 @@ router.get('/test-auth', checkJwt, (req, res) => {
 });
 
 // Get all habits for a user
-router.get('/', checkJwt, async (req, res) => {
+router.get('/habits', checkJwt, async (req, res) => {
     try {
-        console.log("Decoded token:", req.auth);
-        const userId = req.user?.sub;
+        const userId = req.auth?.sub; //
+        console.log("User ID from token:", userId);
 
-        if (!userId) {
-            return res.status(401).json({ message: 'User ID not found in token' });
-        }
+        if (!userId) return res.status(400).json({ message: "User ID not found in token." });
 
-        console.log('Fetching habits for user:', userId);
         const habits = await Habit.find({ userId });
-        return res.json(habits);
-    } catch (error) {
-        console.error('Error fetching habits:', error);
-        return res.status(500).json({ message: 'Server Error' });
+        res.json(habits);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to fetch habits." });
     }
 });
+
 
 
 // Get habits for a user within a date range
