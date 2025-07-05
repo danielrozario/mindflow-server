@@ -10,7 +10,7 @@ router.get('/test-auth', checkJwt, (req, res) => {
 });
 
 // Get all habits for a user
-router.get('/habits', checkJwt, async (req, res) => {
+router.get('/', checkJwt, async (req, res) => {
     try {
         const userId = req.auth?.sub; //
         console.log("User ID from token:", userId);
