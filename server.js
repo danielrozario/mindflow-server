@@ -9,6 +9,7 @@ import journalPagesRoutes from './routes/api/journalPages.js';
 import correlationRoutes from './routes/api/correlation.js';
 import logger from './config/logger.js';
 import healthRoutes from './routes/api/health.js';
+import checkJwt from "./middleware/checkJwt.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -21,7 +22,7 @@ const startServer = async () => {
     app.use(express.json());
 
     // CORS setup
-    const allowedOrigins = ['http://localhost:3000'];
+    //const allowedOrigins = ['http://localhost:3000'];
     app.use(cors({
         // origin: allowedOrigins
     }));
@@ -35,7 +36,12 @@ const startServer = async () => {
     // Use routes
     app.use('/api/users', usersRoutes);
     app.use('/api/simplejournalpages', simpleJournalPagesRoutes);
-    app.use('/api/habits', habits);
+    app.use('/api/habits', checkJwt, (req,res,next) => {
+        console.log('Decoded JWT user:', req.user);
+        next();
+    }, habits);
+
+
     app.use('/api/journalPages', journalPagesRoutes);
     app.use('/api/correlation', correlationRoutes);
     app.use('/health', healthRoutes);

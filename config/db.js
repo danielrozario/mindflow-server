@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 import logger from '../config/logger.js'
 const connectDB = async () => {
     try {
-        console.log("MONGO_URI from .env:", process.env.MONGO_URI);
-
+        logger.info('Connecting to MongoDB...');
         const conn = await mongoose.connect(process.env.MONGO_URI);
         logger.info('MongoDB connected');
         console.log(`MongoDB Connected`);
