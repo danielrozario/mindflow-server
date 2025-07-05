@@ -7,7 +7,7 @@ import checkJwt from "../../middleware/checkJwt.js";
 router.get('/',  checkJwt, async (req, res) => {
     try {
         console.log('Fetching habits');
-        const userId  = req.sub; // Get userId from the request parameters
+        const userId  = req.user.sub; // Get userId from the request parameters
         console.log('Fetching habits for user:', userId);
 
         const habits = await Habit.find({ userId });
@@ -57,7 +57,7 @@ router.get('/range', checkJwt ,async(req, res) => {
 // Create a new habit
 router.post('/', checkJwt, async (req, res) => {
     try {
-        const userId = req.sub;
+        const userId = req.user.sub;
         console.log('Creating a new habit for user:', userId);
 
         const newHabit = new Habit({

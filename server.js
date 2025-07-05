@@ -38,14 +38,14 @@ const startServer = async () => {
     app.use('/api/users', usersRoutes);
     app.use('/api/simplejournalpages', simpleJournalPagesRoutes);
     app.use('/api/habits', (req,res,next) => {
-        console.log('Decoded JWT user:', req.user);
-        console.log("Headers received:", req.headers);
-        const authHeader = req.headers.authorization;
-        if (authHeader) {
-            const token = authHeader.split(' ')[1];
-            const decoded = jwt.decode(token);
-            console.log('Manually decoded token:', decoded);
-        }
+        // console.log('Decoded JWT user:', req.user);
+        // console.log("Headers received:", req.headers);
+        // const authHeader = req.headers.authorization;
+        // if (authHeader) {
+        //     const token = authHeader.split(' ')[1];
+        //     const decoded = jwt.decode(token);
+        //     console.log('Manually decoded token:', decoded);
+        // }
         next();
     }, habits);
 
