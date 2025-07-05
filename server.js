@@ -10,6 +10,7 @@ import correlationRoutes from './routes/api/correlation.js';
 import logger from './config/logger.js';
 import healthRoutes from './routes/api/health.js';
 import checkJwt from "./middleware/checkJwt.js";
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -39,6 +40,12 @@ const startServer = async () => {
     app.use('/api/habits', checkJwt, (req,res,next) => {
         console.log('Decoded JWT user:', req.user);
         console.log("Headers received:", req.headers);
+        const authHeader = req.headers.authorization;
+        if (authHeader) {
+            const token = authHeader.split(' ')[1];
+            const decoded = jwt.decode(token);
+            console.log('Manually decoded token:', decoded);
+        }
         next();
     }, habits);
 
