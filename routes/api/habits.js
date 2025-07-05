@@ -20,7 +20,7 @@ router.get('/',  checkJwt, async (req, res) => {
 
 // Get habits for a user within a date range
 router.get('/range', checkJwt ,async(req, res) => {
-    const userId = req.user.sub;
+    const userId = req.sub;
     const { startDate, endDate } = req.query;
 
     if (!startDate || !endDate) {
@@ -57,7 +57,7 @@ router.get('/range', checkJwt ,async(req, res) => {
 // Create a new habit
 router.post('/', checkJwt, async (req, res) => {
     try {
-        const userId = req.user.sub;
+        const userId = req.sub;
         console.log('Creating a new habit for user:', userId);
 
         const newHabit = new Habit({
