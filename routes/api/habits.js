@@ -6,7 +6,8 @@ import checkJwt from "../../middleware/checkJwt.js";
 // Get all habits for a user
 router.get('/',  checkJwt, async (req, res) => {
     try {
-        const userId  = req.user.sub; // Get userId from the request parameters
+        console.log('Fetching habits');
+        const userId  = req.sub; // Get userId from the request parameters
         console.log('Fetching habits for user:', userId);
 
         const habits = await Habit.find({ userId });
