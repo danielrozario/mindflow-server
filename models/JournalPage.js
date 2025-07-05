@@ -15,7 +15,8 @@ const journalPageSchema = new mongoose.Schema({
     },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+    user: { type: String, required: true, index: true }
+
 });
 
 export default mongoose.model('JournalPage', journalPageSchema);

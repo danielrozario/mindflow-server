@@ -1,44 +1,35 @@
 import express from 'express';
 import { exec } from 'child_process';
-import JournalPage from '../../models/JournalPage.js'; // Adjust the path as needed
+import JournalPage from '../../models/JournalPage.js';
+import checkJwt from '../../middleware/checkJwt.js';
 
 const router = express.Router();
 
 // Create a new journal page entry with sentiment analysis
-router.post('/', async (req, res) => {
-    const { date, goalsForTheDay, reflections, gratitude, dailyAccomplishments, freewriting, user } = req.body;
+router.post('/', checkJwt, async (req, res) => {
+    const user = req.auth.sub;
+    const { date, goalsForTheDay, reflections, gratitude, dailyAccomplishments, freewriting } = req.body;
 
-    // Combine all journal sections to analyze the overall sentiment
     const journalEntryText = `${goalsForTheDay} ${reflections} ${gratitude} ${dailyAccomplishments} ${freewriting}`;
 
     try {
-
-        // Run the Python sentiment analysis script
         exec(`python ./scripts/sentiment_analysis.py "${journalEntryText}"`, async (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error: ${error.message}`);
-                return res.status(500).json({ message: 'Error analyzing sentiment', error });
+            if (error || stderr) {
+                console.error(`Sentiment analysis error:`, error || stderr);
+                return res.status(500).json({ message: 'Error analyzing sentiment', error: error?.message || stderr });
             }
 
-            if (stderr) {
-                console.error(`Stderr: ${stderr}`);
-                return res.status(500).json({ message: 'Sentiment analysis error', error });
-            }
-
-            // Parse sentiment analysis result
             const sentiment = JSON.parse(stdout);
-            console.log('sentiment is '+ sentiment);
 
-            // Create and save the new journal entry with sentiment scores
             const newEntry = new JournalPage({
-                date: date || new Date(), // Defaults to current date if not provided
+                date: date || new Date(),
                 goalsForTheDay,
                 reflections,
                 gratitude,
                 dailyAccomplishments,
                 freewriting,
-                sentiment, // Store sentiment analysis results
-                user: user
+                sentiment,
+                user
             });
 
             await newEntry.save();
@@ -51,24 +42,22 @@ router.post('/', async (req, res) => {
 });
 
 // Get journal entries for a specific user and date
-router.get('/', async (req, res) => {
-    const { date, user } = req.query;
+router.get('/', checkJwt, async (req, res) => {
+    const user = req.auth.sub;
+    const { date } = req.query;
 
-    if (!date || !user) {
-        return res.status(400).json({ message: 'Date and User ID are required' });
+    if (!date) {
+        return res.status(400).json({ message: 'Date is required' });
     }
 
     try {
-        // Convert date to start and end of the day
         const startOfDay = new Date(date);
         startOfDay.setUTCHours(0, 0, 0, 0);
-
         const endOfDay = new Date(date);
         endOfDay.setUTCHours(23, 59, 59, 999);
 
-        // Find journal entries within the date range for the user
         const entries = await JournalPage.find({
-            user: user,
+            user,
             date: { $gte: startOfDay, $lte: endOfDay }
         });
 
@@ -79,19 +68,22 @@ router.get('/', async (req, res) => {
     }
 });
 
-//Get journal entries for a specific user within a date range
-router.get('/range', async (req, res) => {
-    const { user, startDate, endDate } = req.query;
+// Get journal entries within a date range
+router.get('/range', checkJwt, async (req, res) => {
+    const user = req.auth.sub;
+    const { startDate, endDate } = req.query;
 
-    if (!startDate || !endDate || !user) {
-        return res.status(400).json({ message: 'User ID, start date, and end date are required' });
+    if (!startDate || !endDate) {
+        return res.status(400).json({ message: 'Start date and end date are required' });
     }
 
     try {
-        // Find journal entries within the date range for the user
         const journalEntries = await JournalPage.find({
-            user: user,
-            date: { $gte: new Date(startDate), $lte: new Date(endDate) }
+            user,
+            date: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
+            }
         });
 
         res.json(journalEntries);
@@ -101,32 +93,23 @@ router.get('/range', async (req, res) => {
     }
 });
 
-// Update a journal page entry with sentiment analysis
-router.put('/:id', async (req, res) => {
+// Update a journal entry
+router.put('/:id', checkJwt, async (req, res) => {
+    const user = req.auth.sub;
     const { date, goalsForTheDay, reflections, gratitude, dailyAccomplishments, freewriting } = req.body;
-
-    // Combine all journal sections to analyze the overall sentiment
     const journalEntryText = `${goalsForTheDay} ${reflections} ${gratitude} ${dailyAccomplishments} ${freewriting}`;
 
     try {
-        // Run the Python sentiment analysis script
         exec(`python ./scripts/sentiment_analysis.py "${journalEntryText}"`, async (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error: ${error.message}`);
-                return res.status(500).json({ message: 'Error analyzing sentiment', error });
+            if (error || stderr) {
+                console.error('Sentiment analysis error:', error || stderr);
+                return res.status(500).json({ message: 'Sentiment analysis failed', error: error?.message || stderr });
             }
 
-            if (stderr) {
-                console.error(`Stderr: ${stderr}`);
-                return res.status(500).json({ message: 'Sentiment analysis error', error });
-            }
-
-            // Parse sentiment analysis result
             const sentiment = JSON.parse(stdout);
-        console.log('sentiment for put ' + sentiment)
-            // Update the journal entry with new text and sentiment scores
-            const updatedEntry = await JournalPage.findByIdAndUpdate(
-                req.params.id,
+
+            const updatedEntry = await JournalPage.findOneAndUpdate(
+                { _id: req.params.id, user },
                 {
                     date,
                     goalsForTheDay,
@@ -134,8 +117,8 @@ router.put('/:id', async (req, res) => {
                     gratitude,
                     dailyAccomplishments,
                     freewriting,
-                    sentiment,  // Update sentiment analysis results
-                    updatedAt: Date.now(),
+                    sentiment,
+                    updatedAt: Date.now()
                 },
                 { new: true }
             );
@@ -152,10 +135,12 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Delete a journal page entry
-router.delete('/:id', async (req, res) => {
+// Delete a journal entry
+router.delete('/:id', checkJwt, async (req, res) => {
+    const user = req.auth.sub;
+
     try {
-        const deletedEntry = await JournalPage.findByIdAndDelete(req.params.id);
+        const deletedEntry = await JournalPage.findOneAndDelete({ _id: req.params.id, user });
 
         if (!deletedEntry) {
             return res.status(404).json({ message: 'Journal entry not found' });
