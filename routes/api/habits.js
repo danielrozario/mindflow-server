@@ -13,6 +13,8 @@ router.get('/test-auth', checkJwt, (req, res) => {
 router.get('/',  checkJwt, async (req, res) => {
     try {
         console.log('Fetching habits');
+        console.log('Decoded token:', req.auth); // or req.user in older versions
+        res.json({ message: 'Authenticated!', user: req.auth });
         console.log(req.user);
         const userId  = req.user.sub; // Get userId from the request parameters
         console.log('Fetching habits for user:', userId);
