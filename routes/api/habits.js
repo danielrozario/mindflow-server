@@ -3,9 +3,9 @@ const router = express.Router();
 import Habit from '../../models/Habit.js';
 
 // Get all habits for a user
-router.get('/:userId', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const { userId } = req.params; // Get userId from the request parameters
+        const userId  = req.user.sub; // Get userId from the request parameters
         console.log('Fetching habits for user:', userId);
 
         const habits = await Habit.find({ userId });
@@ -17,8 +17,8 @@ router.get('/:userId', async (req, res) => {
 });
 
 // Get habits for a user within a date range
-router.get('/:userId/range', async (req, res) => {
-    const { userId } = req.params;
+router.get('/range', async (req, res) => {
+    const userId = req.user.sub;
     const { startDate, endDate } = req.query;
 
     if (!startDate || !endDate) {
@@ -55,7 +55,7 @@ router.get('/:userId/range', async (req, res) => {
 // Create a new habit
 router.post('/', async (req, res) => {
     try {
-        const { userId } = req.body; // Expect userId in the request body
+        const userId = req.user.sub;
         console.log('Creating a new habit for user:', userId);
 
         const newHabit = new Habit({
