@@ -1,3 +1,6 @@
+import mongoose from 'mongoose';
+
+
 const habitSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     userId: { type: String, required: true, index: true }, // good: stores Auth0 sub as string
