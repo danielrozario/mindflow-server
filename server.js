@@ -38,6 +38,7 @@ const startServer = async () => {
     app.use('/api/simplejournalpages', simpleJournalPagesRoutes);
     app.use('/api/habits', checkJwt, (req,res,next) => {
         console.log('Decoded JWT user:', req.user);
+        console.log("Headers received:", req.headers);
         next();
     }, habits);
 
