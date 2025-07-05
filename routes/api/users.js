@@ -5,11 +5,10 @@ const router = express.Router();
 
 // @route   GET api/users
 // @desc    Check if a user exists by email
-console.log('inside user.js');
 
 router.get('/', async (req, res) => {
     try {
-        console.log('checking if user exists')
+        console.log('Checking if user exists')
         const email = req.query.email;
 
         // Find user by email
@@ -34,7 +33,7 @@ router.post('/', async (req, res) => {
     const { name, email, auth0Id } = req.body;  // Add auth0Id to the request body
 
     try {
-        console.log('tried to create new user')
+        console.log('Tried to create new user')
         let user = await User.findOne({ email });
 
         if (user) {
@@ -42,7 +41,7 @@ router.post('/', async (req, res) => {
             console.log('user does  exist')
             return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
         }
-console.log('user does not exist')
+            console.log('User does not exist')
 
         user = new User({
             name,

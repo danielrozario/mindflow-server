@@ -3,8 +3,6 @@ import SimpleJournalPage from '../../models/SimpleJournalPage.js';
 import User from "../../models/User.js";
 
 const router = express.Router();
-console.log('inside simplejournalpages route')
-
 
 // Create a new simple journal page for a user
 router.post('/', async (req, res) => {
