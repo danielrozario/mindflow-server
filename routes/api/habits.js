@@ -3,6 +3,12 @@ const router = express.Router();
 import Habit from '../../models/Habit.js';
 import checkJwt from "../../middleware/checkJwt.js";
 
+
+router.get('/test-auth', checkJwt, (req, res) => {
+    console.log('Decoded token:', req.auth); // or req.user in older versions
+    res.json({ message: 'Authenticated!', user: req.auth });
+});
+
 // Get all habits for a user
 router.get('/',  checkJwt, async (req, res) => {
     try {
