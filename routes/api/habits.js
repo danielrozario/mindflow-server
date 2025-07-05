@@ -1,9 +1,10 @@
 import express from "express";
 const router = express.Router();
 import Habit from '../../models/Habit.js';
+import checkJwt from "../../middleware/checkJwt.js";
 
 // Get all habits for a user
-router.get('/', async (req, res) => {
+router.get('/',  checkJwt, async (req, res) => {
     try {
         const userId  = req.user.sub; // Get userId from the request parameters
         console.log('Fetching habits for user:', userId);
@@ -17,7 +18,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get habits for a user within a date range
-router.get('/range', async (req, res) => {
+router.get('/range', checkJwt ,async(req, res) => {
     const userId = req.user.sub;
     const { startDate, endDate } = req.query;
 
@@ -53,7 +54,7 @@ router.get('/range', async (req, res) => {
 
 
 // Create a new habit
-router.post('/', async (req, res) => {
+router.post('/', checkJwt, async (req, res) => {
     try {
         const userId = req.user.sub;
         console.log('Creating a new habit for user:', userId);
@@ -70,7 +71,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update a habit's tracked days
-router.put('/:id/trackedDays', async (req, res) => {
+router.put('/:id/trackedDays', checkJwt,async (req, res) => {
     try {
         const habit = await Habit.findById(req.params.id);
         if (!habit) {
@@ -88,7 +89,7 @@ router.put('/:id/trackedDays', async (req, res) => {
 });
 
 // Delete a habit
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', checkJwt, async (req, res) => {
     try {
         const { id } = req.params;
 
