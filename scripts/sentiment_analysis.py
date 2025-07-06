@@ -1,3 +1,6 @@
+import nltk
+nltk.data.path.append('./nltk_data')
+
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import sys
 import json
