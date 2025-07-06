@@ -2,7 +2,7 @@ import express from 'express';
 import axios from 'axios';  // To call existing APIs
 
 const router = express.Router();
-const url = 'http://18.175.157.162:5000';
+const url = 'https://mindflow-server-21qb.onrender.com';
 
 // API to get consolidated journal and habit data for a specific date range
 router.get('/', async (req, res) => {
