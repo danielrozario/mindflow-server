@@ -13,7 +13,7 @@ router.post('/', checkJwt, async (req, res) => {
     const journalEntryText = `${goalsForTheDay} ${reflections} ${gratitude} ${dailyAccomplishments} ${freewriting}`;
 
     try {
-        exec(`python ./scripts/sentiment_analysis.py "${journalEntryText}"`, async (error, stdout, stderr) => {
+        exec(`python3 ./scripts/sentiment_analysis.py "${journalEntryText}"`, async (error, stdout, stderr) => {
             if (error || stderr) {
                 console.error(`Sentiment analysis error:`, error || stderr);
                 return res.status(500).json({ message: 'Error analyzing sentiment', error: error?.message || stderr });
@@ -100,7 +100,7 @@ router.put('/:id', checkJwt, async (req, res) => {
     const journalEntryText = `${goalsForTheDay} ${reflections} ${gratitude} ${dailyAccomplishments} ${freewriting}`;
 
     try {
-        exec(`python ./scripts/sentiment_analysis.py "${journalEntryText}"`, async (error, stdout, stderr) => {
+        exec(`python3 ./scripts/sentiment_analysis.py "${journalEntryText}"`, async (error, stdout, stderr) => {
             if (error || stderr) {
                 console.error('Sentiment analysis error:', error || stderr);
                 return res.status(500).json({ message: 'Sentiment analysis failed', error: error?.message || stderr });

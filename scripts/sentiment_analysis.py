@@ -1,9 +1,10 @@
 import nltk
-nltk.data.path.append('./nltk_data')
-
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import sys
 import json
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+# Download VADER lexicon if missing
+nltk.download('vader_lexicon', quiet=True)
 
 # Initialize VADER sentiment analyzer
 sid = SentimentIntensityAnalyzer()
