@@ -13,6 +13,7 @@ router.post('/', checkJwt, async (req, res) => {
     const journalEntryText = `${goalsForTheDay} ${reflections} ${gratitude} ${dailyAccomplishments} ${freewriting}`;
 
     try {
+        console.log('Trying to Enter Journal Entry:');
         exec(`python3 ./scripts/sentiment_analysis.py "${journalEntryText}"`, async (error, stdout, stderr) => {
             if (error || stderr) {
                 console.error(`Sentiment analysis error:`, error || stderr);

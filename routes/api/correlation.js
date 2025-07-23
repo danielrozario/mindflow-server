@@ -1,5 +1,5 @@
 import express from 'express';
-import axios from 'axios';  // To call existing APIs
+import axios from 'axios';
 
 const router = express.Router();
 const url = 'https://mindflow-server-21qb.onrender.com';
